@@ -11,8 +11,9 @@ var ShoppingCartListItem = React.createClass({
       seconds: '00',
     }
   },
-  driveTimer: function(){
+  countdown: function(){
     var data = this.props.data;
+    var now = Date.now();
     function getTimeRemaining(ms){
       return {
         seconds: Math.floor( (ms/1000) % 60 ),
@@ -20,19 +21,21 @@ var ShoppingCartListItem = React.createClass({
       };
     }   
 
-    this.setState({
-      seconds: ('0' + getTimeRemaining(data.expire - Date.now()).seconds).slice(-2),
-      minutes: (getTimeRemaining(data.expire - Date.now()).minutes)
-    });
-  },
-  componentWillMount: function(){
-    // do some checking cleanup
+    // check if expiration has passed:
+    if(data.expire > now){
+      this.setState({
+        seconds: ('0' + getTimeRemaining(data.expire - Date.now()).seconds).slice(-2),
+        minutes: (getTimeRemaining(data.expire - Date.now()).minutes)
+      });
+    } else {
+      this.props.remove(data);
+    }
   },
   componentDidMount: function(){
     // we'll need something to keep track of each timer,
     // _intervalId_ for the current cart item here,
     // seems to be a convention for timers
-    var intervalId = setInterval(this.driveTimer, 1000);
+    var intervalId = setInterval(this.countdown, 1000);
     this.setState({intervalId: intervalId});
   },
   componentWillUnmount: function(){
@@ -47,7 +50,7 @@ var ShoppingCartListItem = React.createClass({
         <td>{data.size}</td>
         <td>{data.qty}</td>
         <td>{this.state.minutes}:{this.state.seconds}</td>
-        <td><button onClick={ function(){ self.props.userClickRemove(data) } } className="btn btn-primary">Remove</button></td>
+        <td><button onClick={ function(){ self.props.remove(data) } } className="btn btn-primary">Remove</button></td>
       </tr>
     );
   }
@@ -61,7 +64,7 @@ var ShoppingCartList = React.createClass({
         <ShoppingCartListItem 
           key={item.title} 
           data={item} 
-          userClickRemove={self.props.userClickRemove}
+          remove={self.props.remove}
         />
       );
     });
@@ -94,23 +97,7 @@ var ShoppingCartComponent = React.createClass({
       cartItems: cartItems
     }
   },
-  componentWillMount: function(){
-    // var self = this;
-    // var cartItems = self.state.cartItems; // all objects in cart
-    
-    // var now = Date.now();
-    // // hacking stuff:
-    // cartItems.filter(function(item, i){
-    //   if(item.expire < now){
-    //     cartItems.splice(i, 1);
-    //   }
-    // });
-    
-    // localStorage.setItem('cart', JSON.stringify(cartItems) ); // update local storage
-    // self.setState({ cartItems: cartItems }); // update cart state
-
-  },
-  userClickRemove: function(data){
+  remove: function(data){
     var cartItems = this.state.cartItems; // all objects in cart 
     // console.log(data); // data: the thing we want to remove
     // hacking stuff:
@@ -131,7 +118,7 @@ var ShoppingCartComponent = React.createClass({
           <NavBar />
           <ShoppingCartList 
             cartItems={this.state.cartItems}
-            userClickRemove={this.userClickRemove}
+            remove={this.remove}
           />
         </ContainerRow>
       </div>
