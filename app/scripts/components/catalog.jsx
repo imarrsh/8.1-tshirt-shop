@@ -78,10 +78,12 @@ var CatalogListing =  React.createClass({
 });
 
 
-
 var CatalogComponent = React.createClass({
   addToCart: function(e, product){
     e.preventDefault();
+    product.time = Date.now();
+    product.expire = product.time + ((60*1000)*10);
+
     localStorage.setItem(product.title, JSON.stringify(product) );
   },
   getDefaultProps: function(){

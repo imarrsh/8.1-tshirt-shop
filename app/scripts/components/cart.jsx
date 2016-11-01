@@ -4,6 +4,34 @@ var ContainerRow = require('./layouts/layouts.jsx').ContainerRow;
 var NavBar = require('./layouts/layouts.jsx').NavBar;
 
 var ShoppingCartListItem = React.createClass({
+  getInitialState: function(){
+    // var time = this.props.data.expire - Date.now();
+    return {
+      minutes: 0,
+      seconds: 0,
+    }
+  },
+  componentWillMount: function(){
+    var self = this;
+    var data = this.props.data;
+    
+    function getTimeRemaining(ms){
+      return {
+        seconds: Math.floor( (ms/1000) % 60 ),
+        minutes: Math.floor( (ms/1000/60) % 60 )
+      };
+    }   
+
+    setInterval(function(){
+      self.setState({
+        seconds: ('0' + getTimeRemaining(data.expire - Date.now()).seconds).slice(-2),
+        minutes: ('0' + getTimeRemaining(data.expire - Date.now()).minutes).slice(-1)
+      });
+    }, 1000);
+  },
+  componentWillUnmount: function(){
+    clearInterval();
+  },
   render: function(){
     var data = this.props.data
     return(
@@ -11,6 +39,8 @@ var ShoppingCartListItem = React.createClass({
         <td>{data.title}</td>
         <td>{data.size}</td>
         <td>{data.qty}</td>
+        <td>{this.state.minutes}:{this.state.seconds}</td>
+        <td><button className="btn btn-primary">Remove</button></td>
       </tr>
     );
   }
@@ -37,6 +67,8 @@ var ShoppingCartList = React.createClass({
             <th>Shirt</th>
             <th>Size</th>
             <th>Quantity</th>
+            <th>Expires</th>
+            <th>Remove</th>
           </tr>
         </thead>
         <tbody>
