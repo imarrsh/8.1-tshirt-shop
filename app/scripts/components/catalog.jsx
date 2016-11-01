@@ -79,12 +79,12 @@ var CatalogListing =  React.createClass({
 
 
 var CatalogComponent = React.createClass({
-  addToCart: function(e, product){
-    e.preventDefault();
-    product.time = Date.now();
-    product.expire = product.time + ((60*1000)*10);
+  getInitialState: function(){
+    var cartItems = [];
 
-    localStorage.setItem(product.title, JSON.stringify(product) );
+    return {
+      cartItems : cartItems
+    };
   },
   getDefaultProps: function(){
     var tshirts = [
@@ -109,8 +109,16 @@ var CatalogComponent = React.createClass({
       tshirts: tshirts
     }; 
   },
-  getInitialState: function(){
-    return null;
+  addToCart: function(e, product){
+    e.preventDefault();
+    product.time = Date.now();
+    product.expire = product.time + ((60*1000)*10);
+    
+    var cartItems = this.state.cartItems;
+    cartItems.push(product);
+
+    this.setState({cartItems: cartItems});
+    localStorage.setItem('cart', JSON.stringify(cartItems) );
   },
   render: function(){
     return(
