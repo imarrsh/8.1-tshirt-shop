@@ -83,7 +83,7 @@ var CatalogListing =  React.createClass({
 
 var CatalogComponent = React.createClass({
   getInitialState: function(){
-    var cartItems = JSON.parse(localStorage.getItem('cart'));
+    var cartItems = JSON.parse(localStorage.getItem('cart')) || [];
 
     return {
       cartItems : cartItems
