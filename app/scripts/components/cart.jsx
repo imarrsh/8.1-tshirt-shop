@@ -62,7 +62,7 @@ var ShoppingCartList = React.createClass({
     var cartItems = this.props.cartItems.map(function(item){
       return(
         <ShoppingCartListItem 
-          key={item.title} 
+          key={item.id} 
           data={item} 
           remove={self.props.remove}
         />

@@ -58,12 +58,15 @@ var CatalogListItem = React.createClass({
 })
 
 var CatalogListing =  React.createClass({
+  createUniqueKey: function(){
+    return Math.floor((1+ Math.random()) * 0x10000).toString(16);
+  },
   render: function(){
     var self = this;
 
     var products = this.props.products.map(function(product){
       return(
-        <CatalogListItem key={product.title} product={product} addToCart={self.props.addToCart}/> 
+        <CatalogListItem key={product.id || self.createUniqueKey()} product={product} addToCart={self.props.addToCart}/> 
       );
     });
 
@@ -80,7 +83,7 @@ var CatalogListing =  React.createClass({
 
 var CatalogComponent = React.createClass({
   getInitialState: function(){
-    var cartItems = [];
+    var cartItems = JSON.parse(localStorage.getItem('cart'));
 
     return {
       cartItems : cartItems
@@ -111,6 +114,10 @@ var CatalogComponent = React.createClass({
   },
   addToCart: function(e, product){
     e.preventDefault();
+    // found a neat SO answer for UUID's in js - just using a simplifed 
+    // version here for a simple id
+    // http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+    product.id = Math.floor((1+ Math.random()) * 0x10000).toString(16);
     product.time = Date.now();
     product.expire = product.time + ((60*1000)*10);
     
